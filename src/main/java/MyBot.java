@@ -6,7 +6,7 @@ public class MyBot {
         int myID = iPackage.myID;
         GameMap gameMap;
 
-        Networking.sendInit("JTWebManV7");
+        Networking.sendInit("JTWebManV8");
 
         while(true) {
             ArrayList<Move> moves = new ArrayList<>();
