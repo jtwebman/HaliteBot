@@ -6,7 +6,7 @@ public class MyBot {
         int myID = iPackage.myID;
         GameMap gameMap;
 
-        Networking.sendInit("JTWebManV6");
+        Networking.sendInit("JTWebManV7");
 
         while(true) {
             ArrayList<Move> moves = new ArrayList<>();
@@ -140,14 +140,11 @@ public class MyBot {
         }
 
         if (smallestLoc == null) return Direction.STILL;
-        /*double angle = gameMap.getAngle(currentLoc, smallestLoc);
-        if (angle >= 315 || angle <= 45) return Direction.NORTH;
-        if (angle >= 45 && angle <= 135) return Direction.EAST;
-        if (angle >= 135 && angle <= 225) return Direction.SOUTH;
-        return Direction.WEST;*/
 
-        int directionX = smallestLoc.x - currentLoc.x;
-        int directionY = smallestLoc.y - currentLoc.y;
+        Location adjSmallestLoc = gameMap.getLocationCenteredOn(smallestLoc, currentLoc);
+
+        int directionX = adjSmallestLoc.x - gameMap.center.x;
+        int directionY = adjSmallestLoc.y - gameMap.center.y;
 
         if (Math.abs(directionX) > Math.abs(directionY)) {
             if (directionX < 0) return Direction.WEST;

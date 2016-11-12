@@ -3,11 +3,15 @@ import java.util.List;
 
 class GameMap{
     List<List<Cell>>contents;
-    int width, height;
+    int width, height, centerX, centerY;
+    Location center;
 
     GameMap(int width, int height) {
         this.width = width;
         this.height = height;
+        this.centerX = (int) Math.floor(width / 2) - 1;
+        this.centerY = (int) Math.floor(height / 2) - 1;
+        this.center = new Location(this.centerX, this.centerY);
 
         contents = new ArrayList<>();
         for(int y = 0; y < height; y++) {
@@ -24,9 +28,26 @@ class GameMap{
         return loc.x < width && loc.x >= 0 && loc.y < height && loc.y >= 0;
     }
 
+    public Location getLocationCenteredOn(Location loc, Location centerLoc) {
+        int offsetX = centerX - centerLoc.x;
+        int offsetY = centerY - centerLoc.y;
+
+        int locationX = loc.x + offsetX;
+        int locationY = loc.y + offsetY;
+
+        if (locationX < 0) locationX += width;
+        if (locationX > width - 1) locationX -= width;
+        if (locationY < 0) locationY += height;
+        if (locationY > height - 1) locationY -= height;
+
+        return new Location(locationX, locationY);
+    }
+
     public double getDistance(Location loc1, Location loc2) {
-        int dx = Math.abs(loc1.x - loc2.x);
-        int dy = Math.abs(loc1.y - loc2.y);
+        Location adjusted = getLocationCenteredOn(loc1, loc2);
+
+        int dx = Math.abs(adjusted.x - center.x);
+        int dy = Math.abs(adjusted.y - center.y);
 
         if(dx > width / 2.0) dx = width - dx;
         if(dy > height / 2.0) dy = height - dy;
