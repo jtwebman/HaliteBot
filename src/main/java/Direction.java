@@ -1,13 +1,15 @@
-package com.jtwebman.halite;
+//import java.util.Random;
 
-import java.util.Random;
+enum Direction {
+    STILL,
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST;
 
-public enum Direction {
-    STILL, NORTH, EAST, SOUTH, WEST;
-
-    public static final Direction[] DIRECTIONS = new Direction[]{STILL, NORTH, EAST, SOUTH, WEST};
+    //public static final Direction[] DIRECTIONS = new Direction[]{STILL, NORTH, EAST, SOUTH, WEST};
     public static final Direction[] CARDINALS = new Direction[]{NORTH, EAST, SOUTH, WEST};
-
+/*
     private static Direction fromInteger(int value) {
         if(value == 0) {
             return STILL;
@@ -29,5 +31,5 @@ public enum Direction {
 
     public static Direction randomDirection() {
         return fromInteger(new Random().nextInt(5));
-    }
+    }*/
 }

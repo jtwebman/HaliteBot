@@ -1,19 +1,10 @@
-package com.jtwebman.halite;
-
-import java.net.*;
-import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
-public class Networking {
-    public static final int SIZE_OF_INTEGER_PREFIX = 4;
-    public static final int CHAR_SIZE = 1;
+class Networking {
     private static int _width, _height;
     private static ArrayList< ArrayList<Integer> > _productions;
 
-    static void deserializeGameMapSize(String inputString) {
+    private static void deserializeGameMapSize(String inputString) {
         String[] inputStringComponents = inputString.split(" ");
 
         _width = Integer.parseInt(inputStringComponents[0]);
@@ -21,13 +12,13 @@ public class Networking {
     }
 
 
-    static void deserializeProductions(String inputString) {
+    private static void deserializeProductions(String inputString) {
         String[] inputStringComponents = inputString.split(" ");
 
         int index = 0;
-        _productions = new ArrayList< ArrayList<Integer> >();
+        _productions = new ArrayList<>();
         for(int a = 0; a < _height; a++) {
-            ArrayList<Integer> row = new ArrayList<Integer>();
+            ArrayList<Integer> row = new ArrayList<>();
             for(int b = 0; b < _width; b++) {
                 row.add(Integer.parseInt(inputStringComponents[index]));
                 index++;
@@ -36,20 +27,20 @@ public class Networking {
         }
     }
 
-    static String serializeMoveList(ArrayList<Move> moves) {
+    private static String serializeMoveList(ArrayList<Move> moves) {
         StringBuilder builder = new StringBuilder();
-        for(Move move : moves) builder.append(move.loc.x + " " + move.loc.y + " " + move.dir.ordinal() + " ");
+        for(Move move : moves) builder.append(move.loc.x).append(" ").append(move.loc.y).append(" ").append(move.dir.ordinal()).append(" ");
         return builder.toString();
     }
 
-    static GameMap deserializeGameMap(String inputString) {
+    private static GameMap deserializeGameMap(String inputString, int myID) {
         String[] inputStringComponents = inputString.split(" ");
 
         GameMap map = new GameMap(_width, _height);
 
         // Run-length encode of owners
         int y = 0, x = 0;
-        int counter = 0, owner = 0;
+        int counter, owner;
         int currentIndex = 0;
         while(y != map.height) {
             counter = Integer.parseInt(inputStringComponents[currentIndex]);
@@ -57,6 +48,7 @@ public class Networking {
             currentIndex += 2;
             for(int a = 0; a < counter; ++a) {
                 map.contents.get(y).get(x).owner = owner;
+                if (owner == myID) map.contents.get(y).get(x).mine = true;
                 ++x;
                 if(x == map.width) {
                     x = 0;
@@ -77,12 +69,12 @@ public class Networking {
         return map;
     }
 
-    static void sendString(String sendString) {
+    private static void sendString(String sendString) {
         System.out.print(sendString+'\n');
         System.out.flush();
     }
 
-    static String getString() {
+    private static String getString() {
         try {
             StringBuilder builder = new StringBuilder();
             int buffer;
@@ -103,20 +95,25 @@ public class Networking {
 
     static InitPackage getInit() {
         InitPackage initPackage = new InitPackage();
-        initPackage.myID = (int)Integer.parseInt(getString());
+        initPackage.myID = stringToInt(getString());
         deserializeGameMapSize(getString());
         deserializeProductions(getString());
-        initPackage.map = deserializeGameMap(getString());
+        initPackage.map = deserializeGameMap(getString(), initPackage.myID);
 
         return initPackage;
+    }
+
+    private static int stringToInt(String value) {
+        if (value == null) return 0;
+        return Integer.parseInt(value);
     }
 
     static void sendInit(String name) {
         sendString(name);
     }
 
-    static GameMap getFrame() {
-        return deserializeGameMap(getString());
+    static GameMap getFrame(int myID) {
+        return deserializeGameMap(getString(), myID);
     }
 
     static void sendFrame(ArrayList<Move> moves) {

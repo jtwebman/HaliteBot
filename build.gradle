@@ -38,7 +38,7 @@ jar {
         attributes(
                 'Implementation-Title': 'JTWebMan Halite Bot',
                 'Implementation-Version': '1.0',
-                'Main-Class': 'com.jtwebman.halite.MyBot'
+                'Main-Class': 'MyBot'
         )
     }
 }
